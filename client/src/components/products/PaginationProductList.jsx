@@ -43,8 +43,7 @@ const PaginationProductList = ({
             No products found
           </h3>
           <p className="text-gray-600 max-w-md">
-            We couldn&apos;t find any products matching your criteria. Try
-            adjusting your filters or search terms.
+            We couldn&apos;t find any products matching your criteria.
           </p>
         </div>
       </div>
@@ -53,29 +52,31 @@ const PaginationProductList = ({
 
   return (
     <div className="w-full space-y-8">
-      {/* Products Grid/List */}
+      {/* ===== PRODUCTS GRID / LIST ===== */}
       <div
         className={
           viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            ? `
+              grid gap-3
+              grid-cols-2
+              sm:grid-cols-2
+              md:grid-cols-3
+              lg:grid-cols-3
+              xl:grid-cols-4
+            `
             : "grid grid-cols-1 gap-4"
         }
       >
         {paginatedProducts.map((product) => (
-          <div
+          <ProductCard
             key={product._id}
-            className={
-              viewMode === "list"
-                ? "transform-none" // Override any transforms for list view
-                : ""
-            }
-          >
-            <ProductCard item={product} viewMode={viewMode} />
-          </div>
+            item={product}
+            viewMode={viewMode}
+          />
         ))}
       </div>
 
-      {/* Pagination */}
+      {/* ===== PAGINATION ===== */}
       {totalPages > 1 && (
         <div className="flex justify-center">
           <Pagination
@@ -90,6 +91,7 @@ const PaginationProductList = ({
     </div>
   );
 };
+
 PaginationProductList.propTypes = {
   products: PropTypes.array.isRequired,
   currentPage: PropTypes.number,

@@ -6,6 +6,7 @@ import Container from "../components/Container";
 import PriceFormat from "../components/PriceFormat";
 import { addToCart, setOrderCount } from "../redux/orebiSlice";
 import toast from "react-hot-toast";
+import { config } from "../../config";
 import {
   FaShoppingBag,
   FaEye,
@@ -39,9 +40,10 @@ const Order = () => {
   // Fetch orders from API
   const fetchUserOrders = useCallback(async () => {
     try {
+      const endpoint = `${config?.baseUrl}/api/order/my-orders`;
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8000/api/order/my-orders`, {
+      const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();

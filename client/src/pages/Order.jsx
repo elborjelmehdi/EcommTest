@@ -7,6 +7,7 @@ import PriceFormat from "../components/PriceFormat";
 import PremiumModal from "../components/PremiumModal";
 import { addToCart, setOrderCount } from "../redux/orebiSlice";
 import toast from "react-hot-toast";
+import { config } from "../../../config";
 import {
   FaShoppingBag,
   FaEye,
@@ -42,35 +43,35 @@ const Order = () => {
   });
 
   const fetchUserOrders = useCallback(async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:8000/api/order/my-orders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
 
-      const data = await response.json();
-      if (data.success) {
-        setOrders(data.orders);
-        // Update order count in Redux
-        dispatch(setOrderCount(data.orders.length));
-      } else {
-        setError(data.message || "Failed to fetch orders");
-        toast.error("Failed to load orders");
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      setError("Failed to load orders");
+    const endpoint = `${config?.baseUrl}/api/order/my-orders`;
+
+    const response = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setOrders(data.orders);
+      dispatch(setOrderCount(data.orders.length));
+    } else {
+      setError(data.message || "Failed to fetch orders");
       toast.error("Failed to load orders");
-    } finally {
-      setLoading(false);
     }
-  }, [dispatch]);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    setError("Failed to load orders");
+    toast.error("Failed to load orders");
+  } finally {
+    setLoading(false);
+  }
+}, [dispatch, config]);
 
   useEffect(() => {
     if (!userInfo) {

@@ -62,10 +62,9 @@ function App() {
     <main className="w-full overflow-hidden">
       <Banner />
       <Container className="py-5 md:py-10">
-        <NewArrivals />
+        
         <BestSellers />
-        <ProductOfTheYear />
-        <SpecialOffers />
+        
       </Container>
     </main>
   );

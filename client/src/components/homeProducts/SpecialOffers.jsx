@@ -44,7 +44,7 @@ const SpecialOffers = () => {
   };
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const endpoint = "http://localhost:8000/products/?_type=offers";
+  
   const endpoint = `${config?.baseUrl}/api/products?offer=true`;
 
   useEffect(() => {

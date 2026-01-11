@@ -13,6 +13,7 @@ import { emptyCart } from "../assets/images";
 import Container from "../components/Container";
 import PriceFormat from "../components/PriceFormat";
 import toast from "react-hot-toast";
+import { config } from "../../config";
 import {
   FaMinus,
   FaPlus,
@@ -73,8 +74,10 @@ const Cart = () => {
 
   const fetchAddresses = async () => {
     try {
+      const endpoint = `${config?.baseUrl}/api/user/addresses`;
+
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/api/user/addresses", {
+      const response = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +102,8 @@ const Cart = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/api/user/addresses", {
+      const endpoint = `${config?.baseUrl}/api/user/addresses`;
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +155,8 @@ const Cart = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/api/order/create", {
+      const endpoint = `${config?.baseUrl}/api/order/create`;
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

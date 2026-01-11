@@ -7,6 +7,7 @@ import PriceFormat from "../components/PriceFormat";
 import PremiumModal from "../components/PremiumModal";
 import { addToCart, setOrderCount } from "../redux/orebiSlice";
 import toast from "react-hot-toast";
+import { config } from "../../config";
 import {
   FaShoppingBag,
   FaMapMarkerAlt,
@@ -47,10 +48,11 @@ const Order = () => {
 
   const fetchUserOrders = useCallback(async () => {
     try {
+      const endpoint = `${config?.baseUrl}/api/order/my-orders`;
       setLoading(true);
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8000/api/order/my-orders`,
+        endpoint,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -818,9 +820,8 @@ const Order = () => {
                   </div>
                 </div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            
+          
 
         {/* Add to Cart Confirmation Modal */}
         <AnimatePresence>
