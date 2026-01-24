@@ -1,6 +1,99 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import productModel from "../models/productModel.js";
+// Get single guest order by order ID
+const getGuestOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await orderModel
+      .findById(orderId)
+      .populate("items.productId", "name image price");
+
+    if (!order) {
+      return res.json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Vérifier que c’est bien une commande guest
+    if (order.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "This order belongs to a registered user",
+      });
+    }
+
+    res.json({
+      success: true,
+      order,
+      message: "Guest order fetched successfully",
+    });
+  } catch (error) {
+    console.log("Get Guest Order By ID Error:", error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Create order without authentication (Guest)
+const createGuestOrder = async (req, res) => {
+  try {
+    const { items, amount, address } = req.body;
+
+    if (!items || !items.length) {
+      return res.json({ success: false, message: "Items required" });
+    }
+
+    if (!amount) {
+      return res.json({ success: false, message: "Amount required" });
+    }
+
+    if (!address) {
+      return res.json({ success: false, message: "Address required" });
+    }
+
+    const newOrder = new orderModel({
+      isGuest: true,
+      items: items.map((item) => ({
+        productId: item._id || item.productId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      })),
+      amount,
+      address: {
+        firstName: address.firstName,
+        lastName: address.lastName,
+        email: address.email,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        zipcode: address.zipcode,
+        country: address.country,
+        phone: address.phone,
+      },
+      paymentMethod: "cod",
+      status: "pending",
+      paymentStatus: "pending",
+    });
+
+    await newOrder.save();
+
+    res.json({
+      success: true,
+      message: "Guest order created successfully",
+      orderId: newOrder._id,
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 
 // Create a new order
 const createOrder = async (req, res) => {
@@ -457,4 +550,6 @@ export {
   getOrderStats,
   deleteOrder,
   getOrderByIdAdmin,
+  createGuestOrder,
+  getGuestOrderById
 };

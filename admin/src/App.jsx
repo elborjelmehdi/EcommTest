@@ -12,7 +12,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Analytics from "./pages/Analytics";
-import Inventory from "./pages/Inventory";
+
 import Invoice from "./pages/Invoice";
 import Categories from "./pages/Categories";
 import Brands from "./pages/Brands";
@@ -34,24 +34,7 @@ function App() {
           path="/*"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen">
-                {/* Premium Support Badge */}
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 px-4 text-center text-sm font-medium shadow-sm">
-                  <div className="flex items-center justify-center gap-2 flex-wrap">
-                    <span>💖</span>
-                    <span>
-                      Support this project & get the premium source code!
-                    </span>
-                    <a
-                      href="https://buymeacoffee.com/reactbd"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors duration-200 text-xs font-semibold"
-                    >
-                      ☕ Buy Me a Coffee
-                    </a>
-                  </div>
-                </div>
+              
                 <Navbar />
                 <div className="flex w-full">
                   <div className="w-16 sm:w-64 lg:w-72 fixed min-h-screen border-r-2 z-10">
@@ -61,10 +44,9 @@ function App() {
                     <ScrollToTop />
                     <Routes>
                       <Route path="/" element={<Home />} />
-                      <Route path="/analytics" element={<Analytics />} />
+                      
                       <Route path="/add" element={<Add token={token} />} />
                       <Route path="/list" element={<List token={token} />} />
-                      <Route path="/inventory" element={<Inventory />} />
                       <Route path="/categories" element={<Categories />} />
                       <Route path="/brands" element={<Brands />} />
                       <Route
@@ -78,7 +60,7 @@ function App() {
                     </Routes>
                   </div>
                 </div>
-              </div>
+              
             </ProtectedRoute>
           }
         />

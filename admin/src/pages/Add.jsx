@@ -196,7 +196,7 @@ const Add = ({ token }) => {
             </div>
             <div>
               <Title className="text-xl sm:text-2xl font-bold text-gray-800">
-                Add New Product
+                Ajouter nouveau produit
               </Title>
               <p className="text-sm text-gray-500 mt-1">
                 Create a new product for your store
@@ -326,12 +326,12 @@ const Add = ({ token }) => {
                     value={formData._type}
                     onChange={handleChange}
                     className="mt-1 w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled
                   >
-                    <option value="">Select type</option>
-                    <option value="new_arrivals">New Arrivals</option>
+                   
+                   
                     <option value="best_sellers">Best Sellers</option>
-                    <option value="special_offers">Special Offers</option>
-                    <option value="promotions">Promotions</option>
+          
                   </select>
                 </div>
               </div>
@@ -426,6 +426,7 @@ const Add = ({ token }) => {
                     value={formData.isAvailable.toString()}
                     onChange={handleChange}
                     className="mt-1 w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled
                   >
                     <option value="true">Available</option>
                     <option value="false">Out of Stock</option>

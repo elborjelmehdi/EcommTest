@@ -8,6 +8,8 @@ import {
   getOrderStats,
   deleteOrder,
   getOrderByIdAdmin,
+  createGuestOrder,
+  getGuestOrderById
 } from "../controllers/orderController.mjs";
 import adminAuth from "../middleware/adminAuth.js";
 import userAuth from "../middleware/userAuth.js";
@@ -20,6 +22,7 @@ const routeValue = "/api/order/";
 router.post(`${routeValue}create`, userAuth, createOrder);
 router.get(`${routeValue}my-orders`, userAuth, getUserOrders);
 router.get(`${routeValue}user/:orderId`, userAuth, getUserOrderById);
+router.get(`${routeValue}guest/:orderId`, getGuestOrderById);
 
 // Admin routes
 router.get(`${routeValue}admin/user/:userId`, adminAuth, getUserOrders);
@@ -28,5 +31,6 @@ router.get(`${routeValue}stats`, adminAuth, getOrderStats);
 router.post(`${routeValue}update-status`, adminAuth, updateOrderStatus);
 router.post(`${routeValue}delete`, adminAuth, deleteOrder);
 router.get(`${routeValue}admin/:orderId`, adminAuth, getOrderByIdAdmin);
+router.post(`${routeValue}guest-create`, createGuestOrder);
 
 export default router;

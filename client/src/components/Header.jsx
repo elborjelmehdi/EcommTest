@@ -13,11 +13,10 @@ import { useSelector } from "react-redux";
 import { FaUserAlt } from "react-icons/fa";
 
 export const headerNavigation = [
-  { title: "Home", link: "/" },
+  { title: "Accueil", link: "/" },
   { title: "Shop", link: "/shop" },
   { title: "About", link: "/about" },
-  { title: "Contact", link: "/contact" },
-  { title: "Orders", link: "/orders" },
+  { title: "Commandes", link: "/orders" },
 ];
 
 const Header = () => {
@@ -30,17 +29,11 @@ const Header = () => {
   return (
     <div className="border-b border-gray-200 sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
       <Container className="py-3 md:py-4 lg:py-6">
-
         {/* ===== TOP BAR ===== */}
         <div className="flex items-center justify-between gap-3">
-
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img
-              src={logo}
-              alt="logo"
-              className="h-14 md:h-24 w-auto"
-            />
+            <img src={logo} alt="logo" className="h-14 md:h-24 w-auto" />
           </Link>
 
           {/* Desktop Search (unchanged) */}
@@ -96,7 +89,6 @@ const Header = () => {
 
           {/* ===== MOBILE ACTIONS ===== */}
           <div className="flex items-center gap-2 md:hidden">
-
             {/* Mobile Cart */}
             <Link
               to="/cart"
@@ -121,10 +113,13 @@ const Header = () => {
         </div>
 
         {/* ===== MOBILE SEARCH ===== */}
-       
 
         {/* ===== MOBILE MENU ===== */}
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="md:hidden">
+        <Dialog
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          className="md:hidden"
+        >
           <div className="fixed inset-0 bg-black/50" />
           <div className="fixed inset-0 flex justify-center items-start pt-16 px-4">
             <DialogPanel className="w-full max-w-md bg-white rounded-2xl shadow-xl">
@@ -160,7 +155,6 @@ const Header = () => {
             </DialogPanel>
           </div>
         </Dialog>
-
       </Container>
     </div>
   );

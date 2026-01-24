@@ -45,7 +45,7 @@ const About = () => {
             className="text-center max-w-4xl mx-auto"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              About Orebi Shopping
+              About Baby Shopping Soltane
             </h1>
             <p className="text-xl text-gray-300 leading-relaxed">
               We&apos;re passionate about bringing you the best shopping

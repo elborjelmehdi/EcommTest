@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
+ userId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "user",
+  required: false,
+},
+isGuest: {
+  type: Boolean,
+  default: false,
+},
   items: [
     {
       productId: {
@@ -42,11 +46,11 @@ const orderSchema = new mongoose.Schema({
     },
     lastName: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
-      required: true,
+      required: false,
     },
     street: {
       type: String,
@@ -58,15 +62,15 @@ const orderSchema = new mongoose.Schema({
     },
     state: {
       type: String,
-      required: true,
+      required: false,
     },
     zipcode: {
       type: String,
-      required: true,
+      required: false,
     },
     country: {
       type: String,
-      required: true,
+      required: false,
     },
     phone: {
       type: String,

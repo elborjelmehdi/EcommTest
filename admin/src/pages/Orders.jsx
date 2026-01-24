@@ -6,6 +6,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { FaFilePdf } from "react-icons/fa";
 import { serverUrl } from "../../config";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 import {
   FaEdit,
   FaTrash,
@@ -35,16 +37,18 @@ const Orders = () => {
   const [editingOrder, setEditingOrder] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
   const [newPaymentStatus, setNewPaymentStatus] = useState("");
 
   const statusOptions = [
     "pending",
     "confirmed",
-    "shipped",
     "delivered",
     "cancelled",
   ];
-  const paymentStatusOptions = ["pending", "paid", "failed"];
+  const paymentStatusOptions = ["pending", "paid"];
 
   // Fetch all orders
   const fetchOrders = async () => {
@@ -71,57 +75,42 @@ const Orders = () => {
     }
   };
   const generatePDF = (order) => {
-
-    // Format 10x15 cm
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
-      format: [100, 150], // 10x15 cm EXACT
+      format: [100, 150],
     });
-  
-    // Entête du magasin
-    doc.setFontSize(20);
-    doc.text("BABY SOLTANE", 10, 15);
-  
-    // Sous-titre
+
+    doc.setFontSize(18);
+    doc.text("BABY SOLTANE", 10, 12);
+    doc.setFontSize(11);
+    doc.text("Bon de Commande", 10, 20);
+
     doc.setFontSize(12);
-    doc.text("Étiquette de Commande", 10, 25);
-  
-    // Informations du client
-    doc.setFontSize(14);
-    doc.text("Informations Client", 10, 38);
-  
-    doc.setFontSize(12);
-    doc.text(`Nom : ${order.userId?.name || "Client"}`, 10, 48);
-    doc.text(`Email : ${order.userId?.email || "-"}`, 10, 55);
-    doc.text(`Date : ${new Date(order.date).toLocaleString()}`, 10, 62);
-  
-    // Tableau des articles
-    const items = order.items?.map((item) => [
+    doc.text("Client :", 10, 30);
+    doc.text(`${order.address.firstName} ${order.address.lastName}`, 10, 36);
+
+    doc.text("Adresse :", 10, 44);
+    doc.text(`${order.address.street}, ${order.address.city}`, 10, 50);
+
+    const items = order.items.map((item) => [
       item.name,
       item.quantity,
       `${item.price} MAD`,
-      `${item.quantity * item.price} MAD`,
+      `${item.price * item.quantity} MAD`,
     ]);
-  
+
     autoTable(doc, {
-      startY: 75,
+      startY: 60,
       head: [["Article", "Qté", "Prix", "Total"]],
-      body: items || [],
-      styles: {
-        fontSize: 10,
-      },
-      margin: { left: 10, right: 10 },
-      tableWidth: "auto",
+      body: items,
+      styles: { fontSize: 9 },
     });
-  
-    // Total
-    const finalY = doc.lastAutoTable.finalY + 10;
-  
-    doc.setFontSize(14);
-    doc.text(`Montant Total : ${order.amount.toFixed(2)} MAD`, 10, finalY);
-  
-    // Téléchargement
+
+    const finalY = doc.lastAutoTable.finalY + 8;
+    doc.setFontSize(12);
+    doc.text(`Total : ${order.amount} MAD`, 10, finalY);
+
     doc.save(`Commande_${order._id}.pdf`);
   };
 
@@ -332,7 +321,7 @@ const Orders = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs lg:text-sm font-medium text-gray-600">
-                Total Orders
+                Total des Commandes
               </p>
               <p className="text-xl lg:text-2xl font-bold text-gray-900">
                 {orders.length}
@@ -346,7 +335,7 @@ const Orders = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs lg:text-sm font-medium text-gray-600">
-                Pending
+                En attente
               </p>
               <p className="text-xl lg:text-2xl font-bold text-yellow-600">
                 {orders.filter((o) => o.status === "pending").length}
@@ -360,7 +349,7 @@ const Orders = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs lg:text-sm font-medium text-gray-600">
-                Delivered
+                Livré
               </p>
               <p className="text-xl lg:text-2xl font-bold text-green-600">
                 {orders.filter((o) => o.status === "delivered").length}
@@ -374,13 +363,14 @@ const Orders = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs lg:text-sm font-medium text-gray-600">
-                Revenue
+                Chiffre
               </p>
               <p className="text-xl lg:text-2xl font-bold text-purple-600">
-                $
                 {orders
+                  .filter((order) => order.paymentStatus === "paid")
                   .reduce((sum, order) => sum + order.amount, 0)
                   .toFixed(2)}
+                &nbsp;MAD
               </p>
             </div>
             <FaCreditCard className="w-6 h-6 lg:w-8 lg:h-8 text-purple-600" />
@@ -487,7 +477,14 @@ const Orders = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
+                <tr
+                  key={order._id}
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setShowDetailsModal(true);
+                  }}
+                  className="hover:bg-gray-50 cursor-pointer"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       #{order._id.slice(-8).toUpperCase()}
@@ -502,7 +499,7 @@ const Orders = () => {
                       </div>
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
-                          {order.userId?.name || "N/A"}
+                          {order.address.firstName} {order.address.lastName}
                         </div>
                         <div className="text-sm text-gray-500">
                           {order.userId?.email || "N/A"}
@@ -655,9 +652,9 @@ const Orders = () => {
 
               {/* Customer Info */}
               <div className="mb-3">
-                <div className="text-sm text-gray-600 mb-1">Customer Email</div>
+                <div className="text-sm text-gray-600 mb-1">Customer Name</div>
                 <div className="text-sm font-medium text-gray-900">
-                  {order.userId?.email || "N/A"}
+                  {order.address.firstName} {order.address.lastName}
                 </div>
               </div>
 
@@ -798,6 +795,48 @@ const Orders = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {showDetailsModal && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-lg p-6">
+            <h3 className="text-lg font-bold mb-2">Détails de la commande</h3>
+
+            <p className="font-semibold">
+              Client : {selectedOrder.address.firstName}{" "}
+              {selectedOrder.address.lastName}
+            </p>
+            <p>
+              Adresse : {selectedOrder.address.street},{" "}
+              {selectedOrder.address.city}
+            </p>
+
+            <div className="mt-4">
+              <h4 className="font-semibold mb-2">Articles</h4>
+              {selectedOrder.items.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex justify-between border-b py-2"
+                >
+                  <span>
+                    {item.name} x{item.quantity}
+                  </span>
+                  <span>{item.price * item.quantity} MAD</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 text-right font-bold">
+              Total : {selectedOrder.amount} MAD
+            </div>
+
+            <button
+              onClick={() => setShowDetailsModal(false)}
+              className="mt-4 w-full bg-gray-800 text-white py-2 rounded"
+            >
+              Fermer
+            </button>
           </div>
         </div>
       )}

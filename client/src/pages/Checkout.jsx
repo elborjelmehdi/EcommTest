@@ -4,6 +4,7 @@ import Container from "../components/Container";
 import PriceFormat from "../components/PriceFormat";
 import StripePayment from "../components/StripePayment";
 import toast from "react-hot-toast";
+import { config } from "../../config";
 import {
   FaCheckCircle,
   FaCreditCard,
@@ -24,31 +25,36 @@ const Checkout = () => {
   const [paymentStep, setPaymentStep] = useState("selection"); // 'selection', 'stripe', 'processing'
 
   const fetchOrderDetails = useCallback(async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:8000/api/order/user/${orderId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setOrder(data.order);
-      } else {
-        toast.error("Order not found");
-        navigate("/orders");
-      }
-    } catch (error) {
-      console.error("Error fetching order:", error);
-      toast.error("Failed to load order details");
-      navigate("/orders");
-    } finally {
-      setLoading(false);
+  try {
+    const token = localStorage.getItem("token");
+
+    const url = token
+      ? `${config?.baseUrl}/api/order/user/${orderId}`
+      : `${config?.baseUrl}/api/order/guest/${orderId}`;
+
+    const response = await fetch(url, {
+      headers: token
+        ? { Authorization: `Bearer ${token}` }
+        : {}, // guest: no auth header
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setOrder(data.order);
+    } else {
+      toast.error("Order not found");
+      navigate("/");
     }
-  }, [orderId, navigate]);
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    toast.error("Failed to load order details");
+    navigate("/");
+  } finally {
+    setLoading(false);
+  }
+}, [orderId, navigate]);
+
 
   useEffect(() => {
     if (orderId) {

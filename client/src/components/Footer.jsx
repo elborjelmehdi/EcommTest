@@ -35,7 +35,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Orebi</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Baby Soltane</h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
               Discover premium quality products with exceptional service. Your
               trusted shopping destination for modern lifestyle essentials.
@@ -68,22 +68,7 @@ const Footer = () => {
                   Shop
                 </a>
               </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
-                >
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/blog"
-                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
-                >
-                  Blog
-                </a>
-              </li>
+
               <li>
                 <a
                   href="/faq"
@@ -106,33 +91,10 @@ const Footer = () => {
                   href="/shop?category=Electronics"
                   className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
                 >
-                  Electronics
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/shop?category=Fashion"
-                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
-                >
                   Fashion
                 </a>
               </li>
-              <li>
-                <a
-                  href="/shop?category=Home & Garden"
-                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
-                >
-                  Home & Garden
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/shop?category=Sports"
-                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm"
-                >
-                  Sports
-                </a>
-              </li>
+
               <li>
                 <a
                   href="/shop?category=Beauty"
@@ -195,7 +157,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             {/* Copyright */}
             <p className="text-gray-500 text-sm">
-              © 2025 Orebi. All rights reserved.
+              © 2025 Baby Soltane. All rights reserved.
             </p>
 
             {/* Payment Methods */}

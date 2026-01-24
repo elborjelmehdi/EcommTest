@@ -5,6 +5,7 @@ import { MdStar, MdFavoriteBorder, MdShare } from "react-icons/md";
 import { motion } from "framer-motion";
 import { getData } from "../helpers/index";
 import { serverUrl } from "../../config";
+import AddToCartButton from "../components/AddToCartButton";
 
 const SingleProduct = () => {
   const location = useLocation();
@@ -222,9 +223,10 @@ const SingleProduct = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-black text-white py-4 px-8 rounded-md hover:bg-gray-800 transition-all duration-300 font-medium uppercase tracking-wider transform hover:scale-[1.02] active:scale-[0.98]">
-                Add to Cart
-              </button>
+              <AddToCartButton
+                item={productInfo}
+                className="w-full flex justify-center"
+              />
             </div>
 
             {/* Action Buttons */}

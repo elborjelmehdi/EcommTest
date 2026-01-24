@@ -36,6 +36,18 @@ const Cart = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [isAddressesExpanded, setIsAddressesExpanded] = useState(false);
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [guestForm, setGuestForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    street: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    country: "",
+    phone: "",
+  });
   const [addressForm, setAddressForm] = useState({
     label: "",
     street: "",
@@ -48,6 +60,36 @@ const Cart = () => {
   });
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const handleGuestOrder = async () => {
+    try {
+      console.log("Guest order function called");
+      const endpoint = `${config.baseUrl}/api/order/guest-create`;
+      console.log("Endpoint:", endpoint);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: products,
+          amount: discount,
+          address: guestForm,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Order placed successfully!");
+        dispatch(resetCart());
+        setShowGuestModal(false);
+        window.location.href = `/checkout/${data.orderId}`;
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error("Server error");
+    }
+  };
 
   useEffect(() => {
     let price = 0;
@@ -232,13 +274,13 @@ const Cart = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 {/* Desktop Header */}
-                <div className="hidden lg:grid grid-cols-10 gap-4 p-6 bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700 uppercase">
-                  <div className="col-span-5">Product</div>
-                  <div className="col-span-2 text-center">Price</div>
-                  <div className="col-span-2 text-center">Quantity</div>
-                  <div className="col-span-1 text-center">Total</div>
+                <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 p-6 bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700 uppercase">
+                  <div>Product</div>
+                  <div className="text-center">Price</div>
+                  <div className="text-center">Quantity</div>
+                  <div className="text-center">Total</div>
+                  <div></div>
                 </div>
-
                 {/* Cart Items List */}
                 <div className="divide-y divide-gray-200">
                   {products.map((item) => (
@@ -360,119 +402,76 @@ const Cart = () => {
                       </div>
 
                       {/* Desktop Layout */}
-                      <div className="hidden lg:grid lg:grid-cols-10 gap-4 items-center">
-                        {/* Product Info */}
-                        <div className="lg:col-span-5">
-                          <div className="flex items-start space-x-4">
-                            <Link
-                              to={`/product/${item._id}`}
-                              className="flex-shrink-0 group"
-                            >
-                              <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                                <img
-                                  src={item?.images?.[0] || item?.image}
-                                  alt={item?.name}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                                />
-                              </div>
-                            </Link>
-                            <div className="flex-1 min-w-0">
-                              <Link
-                                to={`/product/${item._id}`}
-                                className="block hover:text-gray-700"
-                              >
-                                <h3 className="text-lg font-medium text-gray-900 mb-1">
-                                  {item?.name}
-                                </h3>
-                              </Link>
-                              {item?.brand && (
-                                <p className="text-sm text-gray-600 mb-1">
-                                  Brand: {item.brand}
-                                </p>
-                              )}
-                              {item?.category && (
-                                <p className="text-sm text-gray-600">
-                                  Category: {item.category}
-                                </p>
-                              )}
+                      <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 items-center">
+                        {/* Product */}
+                        <div className="flex items-start space-x-4">
+                          <Link
+                            to={`/product/${item._id}`}
+                            className="flex-shrink-0"
+                          >
+                            <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+                              <img
+                                src={item?.images?.[0] || item?.image}
+                                alt={item?.name}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
+                          </Link>
+                          <div>
+                            <h3 className="text-lg font-medium">
+                              {item?.name}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              {item?.brand}
+                            </p>
                           </div>
                         </div>
 
                         {/* Price */}
-                        <div className="lg:col-span-2">
-                          <div className="flex lg:justify-center">
-                            <div className="lg:text-center">
-                              <div className="text-lg font-semibold text-gray-900">
-                                <PriceFormat amount={item?.price || 0} />
-                              </div>
-                              {item?.offer &&
-                                item?.discountedPercentage > 0 && (
-                                  <div className="text-sm text-gray-500 line-through">
-                                    <PriceFormat
-                                      amount={
-                                        (item?.price || 0) +
-                                        ((item?.discountedPercentage || 0) *
-                                          (item?.price || 0)) /
-                                          100
-                                      }
-                                    />
-                                  </div>
-                                )}
-                            </div>
-                          </div>
+                        <div className="text-center min-w-[120px]">
+                          <PriceFormat amount={item?.price || 0} />
                         </div>
 
-                        {/* Quantity Controls */}
-                        <div className="lg:col-span-2">
-                          <div className="flex lg:justify-center">
-                            <div className="flex items-center border border-gray-300 rounded-md">
-                              <button
-                                onClick={() =>
-                                  handleQuantityChange(item._id, "decrease")
-                                }
-                                disabled={(item?.quantity || 1) <= 1}
-                                className="p-3 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                              >
-                                <FaMinus className="w-3 h-3" />
-                              </button>
-                              <span className="px-4 py-3 font-medium min-w-[3rem] text-center">
-                                {item?.quantity || 1}
-                              </span>
-                              <button
-                                onClick={() =>
-                                  handleQuantityChange(item._id, "increase")
-                                }
-                                className="p-3 hover:bg-gray-50 transition-colors"
-                              >
-                                <FaPlus className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Subtotal */}
-                        <div className="lg:col-span-1">
-                          <div className="flex lg:justify-center items-center">
-                            <div className="lg:text-center">
-                              <div className="text-lg font-semibold text-gray-900">
-                                <PriceFormat
-                                  amount={
-                                    (item?.price || 0) * (item?.quantity || 1)
-                                  }
-                                />
-                              </div>
-                            </div>
-                            {/* Remove button for desktop */}
+                        {/* Quantity */}
+                        <div className="flex justify-center min-w-[140px]">
+                          <div className="flex items-center border rounded">
                             <button
                               onClick={() =>
-                                handleRemoveItem(item._id, item.name)
+                                handleQuantityChange(item._id, "decrease")
                               }
-                              className="hidden lg:block ml-2 p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                              className="px-3 py-1"
                             >
-                              <FaTrash className="w-4 h-4" />
+                              <FaMinus />
+                            </button>
+                            <span className="px-4">{item?.quantity || 1}</span>
+                            <button
+                              onClick={() =>
+                                handleQuantityChange(item._id, "increase")
+                              }
+                              className="px-3 py-1"
+                            >
+                              <FaPlus />
                             </button>
                           </div>
+                        </div>
+
+                        {/* Total */}
+                        <div className="text-center min-w-[140px] font-semibold">
+                          <PriceFormat
+                            amount={(item?.price || 0) * (item?.quantity || 1)}
+                          />
+                        </div>
+
+                        {/* Delete */}
+                        <div className="flex justify-end w-[40px]">
+                          <button
+                            onClick={() =>
+                              handleRemoveItem(item._id, item.name)
+                            }
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <FaTrash />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -713,22 +712,16 @@ const Cart = () => {
                 </div>
 
                 <button
-                  onClick={handlePlaceOrder}
-                  disabled={!userInfo || !selectedAddress || isPlacingOrder}
-                  className="w-full bg-gray-900 text-white py-4 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    if (userInfo) {
+                      handlePlaceOrder();
+                    } else {
+                      setShowGuestModal(true);
+                    }
+                  }}
+                  className="w-full bg-gray-900 text-white py-4 rounded-md"
                 >
-                  {!userInfo ? (
-                    "Login to Place Order"
-                  ) : !selectedAddress ? (
-                    "Select Address to Continue"
-                  ) : isPlacingOrder ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Placing Order...
-                    </div>
-                  ) : (
-                    "Place Order"
-                  )}
+                  {userInfo ? "Place Order" : "Checkout as Guest"}
                 </button>
 
                 <p className="text-sm text-gray-500 text-center mt-4">
@@ -958,6 +951,84 @@ const Cart = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {showGuestModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl w-full max-w-xl p-8 shadow-2xl">
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+              معلومات الطلب
+            </h2>
+
+            <div className="grid grid-cols-2 gap-4 mb-3">
+              <input
+                required
+                placeholder="Prènom *"
+                className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onChange={(e) =>
+                  setGuestForm({ ...guestForm, firstName: e.target.value })
+                }
+              />
+              <input
+                required
+                placeholder="Nom de famille *"
+                className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onChange={(e) =>
+                  setGuestForm({ ...guestForm, lastName: e.target.value })
+                }
+              />
+            </div>
+
+            <input
+              placeholder="Email (optional)"
+              className="w-full border rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(e) =>
+                setGuestForm({ ...guestForm, email: e.target.value })
+              }
+            />
+
+            <input
+              required
+              placeholder="Adresse de livraison *"
+              className="w-full border rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(e) =>
+                setGuestForm({ ...guestForm, street: e.target.value })
+              }
+            />
+
+            <input
+              required
+              placeholder="Ville *"
+              className="w-full border rounded-lg px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(e) =>
+                setGuestForm({ ...guestForm, city: e.target.value })
+              }
+            />
+
+            <input
+              required
+              placeholder="Téléphone *"
+              className="w-full border rounded-lg px-4 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              onChange={(e) =>
+                setGuestForm({ ...guestForm, phone: e.target.value })
+              }
+            />
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowGuestModal(false)}
+                className="w-1/2 py-3 border rounded-xl text-gray-700 hover:bg-gray-100 transition"
+              >
+             Annuler
+              </button>
+              <button
+                onClick={handleGuestOrder}
+                className="w-1/2 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:opacity-90 transition"
+              >
+                Commander
+              </button>
+            </div>
           </div>
         </div>
       )}

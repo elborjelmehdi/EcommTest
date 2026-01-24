@@ -48,13 +48,7 @@ const Sidebar = () => {
       description: "Dashboard overview",
       badge: null,
     },
-    {
-      title: "Analytics",
-      icon: <MdAnalytics />,
-      path: "/analytics",
-      description: "View analytics & insights",
-      badge: "New",
-    },
+    
     {
       title: "Products",
       icon: <BiPackage />,
@@ -73,12 +67,7 @@ const Sidebar = () => {
           path: "/list",
           description: "Manage all products",
         },
-        {
-          title: "Inventory",
-          icon: <MdInventory />,
-          path: "/inventory",
-          description: "Stock management",
-        },
+       
         {
           title: "Categories",
           icon: <FaTags />,
@@ -195,7 +184,7 @@ const Sidebar = () => {
           </div>
           <div className="hidden sm:block">
             <h1 className="font-bold text-lg sm:text-xl text-gray-900">
-              Orebi Admin
+              Baby Soltane Admin
             </h1>
             <p className="text-xs text-gray-500 flex items-center gap-1">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>

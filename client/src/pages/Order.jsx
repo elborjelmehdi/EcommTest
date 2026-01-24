@@ -43,35 +43,35 @@ const Order = () => {
   });
 
   const fetchUserOrders = useCallback(async () => {
-  try {
-    setLoading(true);
-    const token = localStorage.getItem("token");
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
 
-    const endpoint = `${config?.baseUrl}/api/order/my-orders`;
+      const endpoint = `${config?.baseUrl}/api/order/my-orders`;
 
-    const response = await fetch(endpoint, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      setOrders(data.orders);
-      dispatch(setOrderCount(data.orders.length));
-    } else {
-      setError(data.message || "Failed to fetch orders");
+      if (data.success) {
+        setOrders(data.orders);
+        dispatch(setOrderCount(data.orders.length));
+      } else {
+        setError(data.message || "Failed to fetch orders");
+        toast.error("Failed to load orders");
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setError("Failed to load orders");
       toast.error("Failed to load orders");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-    setError("Failed to load orders");
-    toast.error("Failed to load orders");
-  } finally {
-    setLoading(false);
-  }
-}, [dispatch, config]);
+  }, [dispatch, config]);
 
   useEffect(() => {
     if (!userInfo) {
